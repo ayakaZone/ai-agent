@@ -3,7 +3,7 @@ package com.ayaka.aiagent.demo.invoke;
 import dev.langchain4j.community.model.dashscope.QwenChatModel;
 import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class LangChain4jInvokeAi {
     public static void main(String[] args) throws Exception {
 
