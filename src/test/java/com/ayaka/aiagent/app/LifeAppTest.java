@@ -9,10 +9,10 @@ import java.util.UUID;
 
 @Slf4j
 @SpringBootTest
-class AnchorAppTest {
+class LifeAppTest {
 
     @Resource
-    private AnchorApp anchorApp;
+    private LifeApp lifeApp;
 
     @Test
     void testAnchorApp() {
@@ -22,17 +22,38 @@ class AnchorAppTest {
         // 第一轮
         log.info("开始第一轮");
         String userPrompt = "你好,我是 ivv";
-        String content = anchorApp.doChat(userPrompt, chatId);
+        String content = lifeApp.doChat(userPrompt, chatId);
         log.info("content: {}", content);
         // 第二轮
         log.info("开始第二轮");
         userPrompt = "我有一个正在交往的对象，她叫 yaa";
-        content = anchorApp.doChat(userPrompt, chatId);
+        content = lifeApp.doChat(userPrompt, chatId);
         log.info("content: {}", content);
         // 第三轮
         log.info("开始第三轮");
         userPrompt = "你还记得我之前和你说的我有一个对象吗，他叫什么";
-        content = anchorApp.doChat(userPrompt, chatId);
+        content = lifeApp.doChat(userPrompt, chatId);
         log.info("content: {}", content);
+    }
+
+    @Test
+    void testDoChatWithReport() {
+
+        String chatId = UUID.randomUUID().toString();
+
+        // 第一轮
+        log.info("开始第一轮");
+        String userPrompt = "你好,我是 ivv";
+        lifeApp.doChatWithReport(userPrompt, chatId);
+    }
+
+    @Test
+    void doChatWithRag() {
+        String chatId = UUID.randomUUID().toString();
+
+        // 第一轮
+        log.info("开始第一轮——————RAG");
+        String userPrompt = "最近我总是睡不好，工作和生活也搞得一团糟，我该怎么办，有没有这方面的相关书籍或课程推荐";
+        lifeApp.doChatWithRag(userPrompt, chatId);
     }
 }
