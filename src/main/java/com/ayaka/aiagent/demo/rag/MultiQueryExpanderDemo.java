@@ -1,0 +1,28 @@
+package com.ayaka.aiagent.demo.rag;
+
+
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.rag.Query;
+import org.springframework.ai.rag.preretrieval.query.expansion.MultiQueryExpander;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+@Component
+public class MultiQueryExpanderDemo {
+
+    private ChatClient.Builder chatClientBuilder;
+
+    public MultiQueryExpanderDemo(ChatModel dashscopeChatModel) {
+        this.chatClientBuilder = ChatClient.builder(dashscopeChatModel);
+    }
+
+    public List<Query> expand() {
+        MultiQueryExpander multiQueryExpander = MultiQueryExpander.builder()
+                .chatClientBuilder(chatClientBuilder)
+                .numberOfQueries(3)
+                .build();
+        return multiQueryExpander.expand(new Query("生活有很多烦恼"));
+    }
+}

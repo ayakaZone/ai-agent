@@ -3,6 +3,9 @@ package com.ayaka.aiagent.app;
 import com.ayaka.aiagent.advice.MyLoggerAdvisor;
 import com.ayaka.aiagent.advice.ReReadingAdvisor;
 import com.ayaka.aiagent.chatmemory.FileBasedChatMemory;
+import com.ayaka.aiagent.rag.LifeAppRagCustomAdvisor;
+import com.ayaka.aiagent.rag.QueryReader;
+import com.ayaka.aiagent.tools.ToolRegistration;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -12,7 +15,10 @@ import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.rag.preretrieval.query.transformation.RewriteQueryTransformer;
+import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -34,7 +40,7 @@ public class LifeApp {
 
     public LifeApp(ChatModel dashscopeChatModel) {
 //        ChatMemory chatMemory = new InMemoryChatMemory();
-        String memoryDir = System.getProperty("user.dir") + "/chat-memory";
+        String memoryDir = System.getProperty("user.dir") + "/tmp/chat-memory";
         ChatMemory chatMemory = new FileBasedChatMemory(memoryDir);
         chatClient = ChatClient
                 .builder(dashscopeChatModel)
@@ -43,10 +49,11 @@ public class LifeApp {
                         // 对话记忆顾问
                         new MessageChatMemoryAdvisor(chatMemory),
                         // 自定义日志顾问
-                        new MyLoggerAdvisor(),
+                        new MyLoggerAdvisor()
                         // 自定义重读顾问
-                        new ReReadingAdvisor()
-                ).build();
+                        // new ReReadingAdvisor()
+                )
+                .build();
     }
 
     /**
@@ -103,11 +110,46 @@ public class LifeApp {
         return lifeReport;
     }
 
+
+
+
     @Resource
-    private VectorStore vectorStore;
+    @Qualifier("lifeAppVectorStore")
+    private VectorStore lifeAppVectorStore;
     @Resource
     private Advisor lifeAppRagCloundAdvisor;
+    @Resource
+    private QueryReader queryReader;
     public String doChatWithRag(String message, String chatId){
+        // 使用查询文本重写
+        String rewriterMessage = queryReader.doQueryRewriter(message);
+        ChatResponse chatResponse = chatClient.prompt()
+                .user(rewriterMessage)
+                .advisors(spec -> {
+                    // 添加对话记忆参数
+                    spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
+                            .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10);
+                })
+                // 问答顾问
+                .advisors(new QuestionAnswerAdvisor(lifeAppVectorStore))
+                // 增强检索顾问（云端知识库）
+                // .advisors(lifeAppRagCloundAdvisor)
+                // 自定义检索顾问
+                .advisors(LifeAppRagCustomAdvisor.createLifeAppRagCustomAdvisor(lifeAppVectorStore, "感悟"))
+                .call()
+                .chatResponse();
+        if (chatResponse == null) {
+            throw new RuntimeException();
+        }
+        String content = chatResponse.getResult().getOutput().getText();
+        log.info("content: {}", content);
+        return content;
+    }
+
+
+    @Resource
+    private ToolCallback[] allTools;
+    public String doChatWithTools(String message, String chatId){
         ChatResponse chatResponse = chatClient.prompt()
                 .user(message)
                 .advisors(spec -> {
@@ -116,14 +158,14 @@ public class LifeApp {
                             .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10);
                 })
                 // 问答顾问
-                // .advisors(new QuestionAnswerAdvisor(vectorStore))
+                //.advisors(new QuestionAnswerAdvisor(lifeAppVectorStore))
                 // 增强检索顾问（云端知识库）
-                .advisors(lifeAppRagCloundAdvisor)
+                // .advisors(lifeAppRagCloundAdvisor)
+                // 自定义检索顾问
+                // .advisors(LifeAppRagCustomAdvisor.createLifeAppRagCustomAdvisor(lifeAppVectorStore, "感悟"))
+                .tools(allTools)
                 .call()
                 .chatResponse();
-        if (chatResponse == null) {
-            throw new RuntimeException();
-        }
         String content = chatResponse.getResult().getOutput().getText();
         log.info("content: {}", content);
         return content;

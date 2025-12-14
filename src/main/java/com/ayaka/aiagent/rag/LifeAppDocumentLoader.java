@@ -35,12 +35,14 @@ public class LifeAppDocumentLoader {
             // 遍历文档为文档加载器设置元信息 fileName
             for (Resource resource : resources) {
                 String filename = resource.getFilename();
+                String status = filename.substring(0, 4);
                 // 加载配置器
                 MarkdownDocumentReaderConfig readerConfig = MarkdownDocumentReaderConfig.builder()
                         .withHorizontalRuleCreateDocument(true)
                         .withIncludeCodeBlock(false)
                         .withIncludeBlockquote(false)
-                        .withAdditionalMetadata("filename", filename)
+                        .withAdditionalMetadata("filename", filename) // 指定元信息-文档名
+                        .withAdditionalMetadata("status", status)
                         .build();
                 // 调用加载器读取文档
                 MarkdownDocumentReader markdownDocumentReader = new MarkdownDocumentReader(resource, readerConfig);
