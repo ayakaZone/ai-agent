@@ -17,6 +17,7 @@ import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.rag.preretrieval.query.transformation.RewriteQueryTransformer;
 import org.springframework.ai.tool.ToolCallback;
+import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -164,6 +165,30 @@ public class LifeApp {
                 // 自定义检索顾问
                 // .advisors(LifeAppRagCustomAdvisor.createLifeAppRagCustomAdvisor(lifeAppVectorStore, "感悟"))
                 .tools(allTools)
+                .call()
+                .chatResponse();
+        String content = chatResponse.getResult().getOutput().getText();
+        log.info("content: {}", content);
+        return content;
+    }
+
+    @Resource
+    private ToolCallbackProvider toolCallbackProvider;
+    public String doChatWithMcp(String message, String chatId){
+        ChatResponse chatResponse = chatClient.prompt()
+                .user(message)
+                .advisors(spec -> {
+                    // 添加对话记忆参数
+                    spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
+                            .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10);
+                })
+                // 问答顾问
+                //.advisors(new QuestionAnswerAdvisor(lifeAppVectorStore))
+                // 增强检索顾问（云端知识库）
+                // .advisors(lifeAppRagCloundAdvisor)
+                // 自定义检索顾问
+                // .advisors(LifeAppRagCustomAdvisor.createLifeAppRagCustomAdvisor(lifeAppVectorStore, "感悟"))
+                .tools(toolCallbackProvider)
                 .call()
                 .chatResponse();
         String content = chatResponse.getResult().getOutput().getText();

@@ -80,9 +80,21 @@ class LifeAppTest {
     }
 
     private void testMessage(String message) {
-        String tips = "请你使用我提供给你的工具完成";
         String chatId = UUID.randomUUID().toString();
         String answer = lifeApp.doChatWithTools(message, chatId);
+        Assertions.assertNotNull(answer);
+    }
+
+    @Test
+    void doChatWithMcp() {
+//        String message = "请帮我搜索上海静安区5公里内合适的约会地点";
+//        String chatId = UUID.randomUUID().toString();
+//        String answer = lifeApp.doChatWithMcp(message, chatId);
+//        Assertions.assertNotNull(answer);
+
+        String message = "我想要一些风景图片作为我的手机壁纸";
+        String chatId = UUID.randomUUID().toString();
+        String answer = lifeApp.doChatWithMcp(message, chatId);
         Assertions.assertNotNull(answer);
     }
 }

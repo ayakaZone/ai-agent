@@ -1,7 +1,6 @@
 ### CUSTOM ###
-application-local.yml
-tmp
-mcp-servers.json
+application-stdio.yml
+application-sse.yml
 
 HELP.md
 target/
@@ -36,4 +35,3 @@ build/
 
 ### VS Code ###
 .vscode/
-"application-local.yml" 

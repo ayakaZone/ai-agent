@@ -21,6 +21,7 @@ public class ToolRegistration {
         ScrapeWebPageTool scrapeWebPageTool = new ScrapeWebPageTool();
         FileOperationTool fileOperationTool = new FileOperationTool();
         WebSearchTool webSearchTool = new WebSearchTool(searchApiKey);
+        TerminateTool terminateTool = new TerminateTool();
         // 封装到 ToolCallbacks 数组中
         return ToolCallbacks.from(
                 pdfGenerationTool,
@@ -28,6 +29,7 @@ public class ToolRegistration {
                 terminalOperationTool,
                 scrapeWebPageTool,
                 fileOperationTool,
-                webSearchTool);
+                webSearchTool,
+                terminateTool);
     }
 }
