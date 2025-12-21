@@ -3,14 +3,18 @@ spring:
     name: ai-agent
   profiles:
     active: local
-  cloud:
-    httpclient:
-      connection:
-        timeout: 30s     # 连接超时时间（建议30秒）
-      read:
-        timeout: 60s     # 读取/响应超时时间（建议60秒）
-      write:
-        timeout: 60s     # 写入超时时间（建议60秒）
+  ai:
+    dashscope:
+      api-key: your-api-key
+      chat:
+        options:
+          model: qwen-plus
+    ollama:
+      embedding:
+        enabled: false
+      base-url: http://localhost:11434
+      chat:
+        model: gemma3:1b
 server:
   port: 8123
   servlet:

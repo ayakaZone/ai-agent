@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
 
 public class TerminalOperationTool {
 
-    @Tool(description = "Execute a command in the terminal")
+    @Tool(description = "Execute a command in the terminal. After execution, provide the output results to the user clearly and completely.")
     public String executeTerminalCommand(@ToolParam(description = "Command to execute in the terminal") String command) {
         StringBuilder output = new StringBuilder();
         try {
