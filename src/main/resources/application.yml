@@ -3,6 +3,14 @@ spring:
     name: ai-agent
   profiles:
     active: local
+  cloud:
+    httpclient:
+      connection:
+        timeout: 30s     # 连接超时时间（建议30秒）
+      read:
+        timeout: 60s     # 读取/响应超时时间（建议60秒）
+      write:
+        timeout: 60s     # 写入超时时间（建议60秒）
 server:
   port: 8123
   servlet:
