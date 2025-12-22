@@ -7,15 +7,15 @@ import org.springframework.ai.tool.ToolCallback;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Menus extends ToolCallAgent{
+public class Manus extends ToolCallAgent{
 
 
-    public Menus(ToolCallback[] availableTools, ChatModel dashscopeChatModel) {
+    public Manus(ToolCallback[] availableTools, ChatModel dashscopeChatModel) {
         super(availableTools);
         this.setAgentName("Menus");
         // 初始化提示词
         String SYSTEM_PROMPT = """  
-                You are YuManus, an all-capable AI assistant, aimed at solving any task presented by the user.  
+                You are Manus, an all-capable AI assistant, aimed at solving any task presented by the user.  
                 You have various tools at your disposal that you can call upon to efficiently complete complex requests.  
                 """;
         this.setSystemPrompt(SYSTEM_PROMPT);

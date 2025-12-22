@@ -21,6 +21,7 @@ import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 
@@ -59,6 +60,7 @@ public class LifeApp {
 
     /**
      * 记忆对话
+     *
      * @param message
      * @param chatId
      * @return
@@ -86,6 +88,7 @@ public class LifeApp {
 
     /**
      * 结构化输出
+     *
      * @param message
      * @param chatId
      * @return
@@ -112,8 +115,6 @@ public class LifeApp {
     }
 
 
-
-
     @Resource
     @Qualifier("lifeAppVectorStore")
     private VectorStore lifeAppVectorStore;
@@ -121,7 +122,8 @@ public class LifeApp {
     private Advisor lifeAppRagCloundAdvisor;
     @Resource
     private QueryReader queryReader;
-    public String doChatWithRag(String message, String chatId){
+
+    public String doChatWithRag(String message, String chatId) {
         // 使用查询文本重写
         String rewriterMessage = queryReader.doQueryRewriter(message);
         ChatResponse chatResponse = chatClient.prompt()
@@ -150,7 +152,8 @@ public class LifeApp {
 
     @Resource
     private ToolCallback[] allTools;
-    public String doChatWithTools(String message, String chatId){
+
+    public String doChatWithTools(String message, String chatId) {
         ChatResponse chatResponse = chatClient.prompt()
                 .user(message)
                 .advisors(spec -> {
@@ -174,7 +177,8 @@ public class LifeApp {
 
     @Resource
     private ToolCallbackProvider toolCallbackProvider;
-    public String doChatWithMcp(String message, String chatId){
+
+    public String doChatWithMcp(String message, String chatId) {
         ChatResponse chatResponse = chatClient.prompt()
                 .user(message)
                 .advisors(spec -> {
@@ -194,5 +198,24 @@ public class LifeApp {
         String content = chatResponse.getResult().getOutput().getText();
         log.info("content: {}", content);
         return content;
+    }
+
+    /**
+     * 流式对话
+     * @param message
+     * @param chatId
+     * @return
+     */
+    public Flux<String> doChatByStream(String message, String chatId) {
+        return chatClient
+                .prompt()
+                .user(message)
+                .advisors(spec -> {
+                    // 添加对话记忆参数
+                    spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
+                            .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10);
+                })
+                .stream()
+                .content();
     }
 }

@@ -79,6 +79,8 @@ public class ToolCallAgent extends ReActAgent {
             List<AssistantMessage.ToolCall> toolCallList = assistantMessage.getToolCalls();
             // AI 的响应文本
             String result = assistantMessage.getText();
+            // 保存助手消息
+            setChatResponse(result);
             // 打印日志
             log.info(getAgentName() + "的思考: " + result);
             log.info(getAgentName() + "需要调用: " + toolCallList.size() + " 个工具使用");
@@ -127,7 +129,7 @@ public class ToolCallAgent extends ReActAgent {
         // 改写结果描述形式
         String result = toolResponseMessage.getResponses()
                 .stream()
-                .map(response -> response.name() + "完成了它的任务！结果: " + response.responseData())
+                .map(response -> "使用了" + response.name() + "工具工作,结果: " + response.responseData())
                 .collect(Collectors.joining("\n"));
         // 判断是否包含了终止执行的工具
         boolean terminateToolCalled = toolResponseMessage.getResponses()
@@ -139,19 +141,5 @@ public class ToolCallAgent extends ReActAgent {
         }
         log.info(getAgentName() + "的输出: " + result);
         return result;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 }
