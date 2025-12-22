@@ -3,10 +3,15 @@ spring:
     name: ai-agent
   profiles:
     active: local
+#  datasource:
+#    url: your-database-url
+#    username: your-username
+#    password: your-password
   datasource:
-    url: your-database-url
-    username: your-username
-    password: your-password
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
   ai:
     dashscope:
       api-key: your-api-key
