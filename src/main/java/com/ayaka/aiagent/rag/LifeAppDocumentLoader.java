@@ -50,7 +50,7 @@ public class LifeAppDocumentLoader {
                 documents.addAll(markdownDocumentReader.get());
             }
         } catch (IOException e) {
-            log.error("读取文档失败，异常信息: ", e);
+            log.warn("读取文档失败，异常信息: ", e);
         }
         return documents;
     }

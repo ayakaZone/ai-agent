@@ -31,6 +31,9 @@ public class LifeAppVectorStoreConfig {
     SimpleVectorStore lifeAppVectorStore(EmbeddingModel dashscopeEmbeddingModel) {
         // 读取文档
         List<Document> documents = lifeAppDocumentLoader.loadDocument();
+        if (documents == null || documents.isEmpty()) {
+            return SimpleVectorStore.builder(dashscopeEmbeddingModel).build();
+        }
         // 调用 TokenTextSplitter 分割文档
         // List<Document> splitDocument = myTokenTextSplitter.splitDocument(documents);
         // 调用 关键字提取元信息
