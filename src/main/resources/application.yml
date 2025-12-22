@@ -3,6 +3,10 @@ spring:
     name: ai-agent
   profiles:
     active: local
+  datasource:
+    url: your-database-url
+    username: your-username
+    password: your-password
   ai:
     dashscope:
       api-key: your-api-key
@@ -36,3 +40,6 @@ knife4j:
   enable: true
   setting:
     language: zh_cn
+# searchApi
+search-api:
+  api-key: your-api-key
