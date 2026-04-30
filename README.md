@@ -1,4 +1,4 @@
-## AI Agent 智能体项目
+## AI Agent 智询生活规划智能体
 
 **一个基于 Spring Boot + Spring AI + 前后端分离的智能 AI Agent 系统**
 
